@@ -14,10 +14,10 @@ export const environment = {
   api: {
     baseUrl: '/dev-api',
     refreshTokenEnabled: false,
-    refreshTokenType: 'auth-refresh'
+    refreshTokenType: 'auth-refresh',
   },
   /** 表单构建器（外链），与若依「表单构建」菜单一致 */
   formBuilderUrl: 'https://mrhj.gitee.io/form-generator/#/',
   providers: [],
-  interceptorFns: []
+  interceptorFns: [],
 } as Environment & { formBuilderUrl?: string };

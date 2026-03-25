@@ -6,7 +6,7 @@ export const environment = {
   api: {
     baseUrl: './',
     refreshTokenEnabled: true,
-    refreshTokenType: 'auth-refresh'
+    refreshTokenType: 'auth-refresh',
   },
-  formBuilderUrl: 'https://mrhj.gitee.io/form-generator/#/'
+  formBuilderUrl: 'https://mrhj.gitee.io/form-generator/#/',
 } as Environment & { formBuilderUrl?: string };

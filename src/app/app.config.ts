@@ -1,7 +1,14 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { default as ngLang } from '@angular/common/locales/zh';
 import { ApplicationConfig, EnvironmentProviders, Provider } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withHashLocation, RouterFeatures } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withViewTransitions,
+  withInMemoryScrolling,
+  withHashLocation,
+  RouterFeatures,
+} from '@angular/router';
 import { I18NService, defaultInterceptor, provideStartup } from '@core';
 import { provideCellWidgets } from '@delon/abc/cell';
 import { provideSTWidgets } from '@delon/abc/st';
@@ -15,19 +22,17 @@ import { zhCN as dateLang } from 'date-fns/locale';
 import { NzConfig, provideNzConfig } from 'ng-zorro-antd/core/config';
 import { zh_CN as zorroLang } from 'ng-zorro-antd/i18n';
 
-import { provideBindAuthRefresh } from './core/net';
-import { echarts } from './core/echarts';
-import { routes } from './routes/routes';
-import { provideEchartsCore } from 'ngx-echarts';
 import { ICONS } from '../style-icons';
 import { ICONS_AUTO } from '../style-icons-auto';
+import { provideBindAuthRefresh } from './core/net';
+import { routes } from './routes/routes';
 
 const defaultLang: AlainProvideLang = {
   abbr: 'zh-CN',
   ng: ngLang,
   zorro: zorroLang,
   date: dateLang,
-  delon: delonLang
+  delon: delonLang,
 };
 
 const alainConfig: AlainConfig = {
@@ -36,8 +41,8 @@ const alainConfig: AlainConfig = {
     // 与若依 Spring Security JWT 一致：请求头携带 Bearer Token
     token_send_key: 'Authorization',
     token_send_template: 'Bearer ${token}',
-    token_send_place: 'header'
-  }
+    token_send_place: 'header',
+  },
 };
 
 const ngZorroConfig: NzConfig = {};
@@ -45,24 +50,34 @@ const ngZorroConfig: NzConfig = {};
 const routerFeatures: RouterFeatures[] = [
   withComponentInputBinding(),
   withViewTransitions(),
-  withInMemoryScrolling({ scrollPositionRestoration: 'top' })
+  withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
 ];
 if (environment.useHash) routerFeatures.push(withHashLocation());
 
 const providers: Array<Provider | EnvironmentProviders> = [
-  provideHttpClient(withInterceptors([...(environment.interceptorFns ?? []), authSimpleInterceptor, defaultInterceptor])),
-  provideEchartsCore({ echarts }),
+  provideHttpClient(
+    withInterceptors([
+      ...(environment.interceptorFns ?? []),
+      authSimpleInterceptor,
+      defaultInterceptor,
+    ]),
+  ),
   provideRouter(routes, ...routerFeatures),
-  provideAlain({ config: alainConfig, defaultLang, i18nClass: I18NService, icons: [...ICONS_AUTO, ...ICONS] }),
+  provideAlain({
+    config: alainConfig,
+    defaultLang,
+    i18nClass: I18NService,
+    icons: [...ICONS_AUTO, ...ICONS],
+  }),
   provideNzConfig(ngZorroConfig),
   provideAuth(),
   provideCellWidgets(...CELL_WIDGETS),
   provideSTWidgets(...ST_WIDGETS),
   provideSFConfig({
-    widgets: [...SF_WIDGETS]
+    widgets: [...SF_WIDGETS],
   }),
   provideStartup(),
-  ...(environment.providers || [])
+  ...(environment.providers || []),
 ];
 
 // If you use `@delon/auth` to refresh the token, additional registration `provideBindAuthRefresh` is required
@@ -71,5 +86,5 @@ if (environment.api?.refreshTokenEnabled && environment.api.refreshTokenType ===
 }
 
 export const appConfig: ApplicationConfig = {
-  providers: providers
+  providers: providers,
 };

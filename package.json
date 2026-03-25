@@ -1,6 +1,6 @@
 {
   "name": "ruo-yi-angular",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng s -o",
@@ -9,7 +9,9 @@
     "test": "ng test",
     "hmr": "ng s -o --hmr",
     "analyze": "ng b --source-map",
-    "analyze:view": "source-map-explorer dist/**/*.js --no-border-checks",
+    "analyze:view": "source-map-explorer \"dist/RuoYi-Angular/browser/**/*.js\" --no-border-checks",
+    "build:stats": "ng build --stats-json",
+    "analyze:stats": "npx --yes esbuild-visualizer --metadata dist/RuoYi-Angular/stats.json --filename dist/RuoYi-Angular/stats-report.html --open",
     "test-coverage": "ng test -c coverage --coverage --watch=false",
     "color-less": "ng-alain-plugin-theme -t=colorLess",
     "theme": "ng-alain-plugin-theme -t=themeCss",

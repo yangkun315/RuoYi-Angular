@@ -109,10 +109,39 @@ dist/RuoYi-Angular/browser/
 
 ### 构建体积与 budgets
 
-项目在 `angular.json` 中为 **initial** 包设置了预算（当前约 **2MB 警告 / 3MB 错误**）。若构建失败并提示 **exceeded maximum budget**，可选处理方式：
+项目在 `angular.json` 中为 **initial** 包设置了预算（当前 **4MB 警告 / 5MB 错误**）。若仍超出，可在同一路径下调高 `maximumWarning` / `maximumError`。
 
-1. **优化**：按需加载、减少不必要的全量依赖、分析包体：`npm run analyze` 后用 `npm run analyze:view` 查看。
-2. **调整预算**（权宜之计）：在 `angular.json` → `projects.RuoYi-Angular.architect.build.configurations.production.budgets` 中适当提高 `maximumWarning` / `maximumError`。
+---
+
+### 体积优化（已实现与可用工具）
+
+工程内已做这些拆分，减小 **首包（initial）**：
+
+| 措施 | 说明 |
+|------|------|
+| **路由懒加载** | 业务页、`DashboardShell`、子仪表盘页均使用 `loadComponent` / `loadChildren`，不在 `main` 里直接 `import` 页面组件。 |
+| **ECharts 移出全局** | `provideEchartsCore` 仅挂在 **`DashboardShellComponent`**，进入仪表盘才加载 ECharts 运行时。 |
+| **地图按需** | `MapChart`、`Geo`、`VisualMap` 放在 `src/app/core/echarts-maps.ts`，仅在 **默认页** `await import(...)` 后再 `registerMap`，分析页/监控页不包含地图模块。 |
+| **基础 ECharts** | `src/app/core/echarts.ts` 仅注册柱状/折线/饼/散点/仪表盘等常用能力。 |
+
+**分析首包与异步块：**
+
+```bash
+# 生产构建并生成 stats.json（路径：dist/RuoYi-Angular/stats.json）
+npm run build:stats
+
+# 用 esbuild-visualizer 打开依赖占比（生成 stats-report.html 并尝试打开浏览器）
+npm run analyze:stats
+```
+
+**结合 source-map 粗查 JS 体积：**
+
+```bash
+npm run analyze
+npm run analyze:view
+```
+
+后续仍可：减少 `ICONS_AUTO` 图标、`@delon/chart` 仅在使用页懒加载、`moment` 换 `date-fns` 等继续做细化。
 
 ---
 
@@ -198,10 +227,13 @@ server {
 |------|------|
 | `npm start` | 开发服务器并打开浏览器 |
 | `npm run build` | 生产构建（默认 configuration） |
+| `npm run build:stats` | 生产构建并生成 `dist/RuoYi-Angular/stats.json` |
+| `npm run analyze:stats` | 根据 `stats.json` 生成可视化报告并打开浏览器 |
 | `npm run watch` | development 配置监视构建 |
 | `npm run lint` | ESLint + Stylelint（Less） |
 | `npm test` | 单元测试 |
 | `npm run analyze` | 带 source-map 构建，便于分析体积 |
+| `npm run analyze:view` | 配合上一命令，用 source-map-explorer 分析 `browser` 目录 JS |
 
 ---
 
