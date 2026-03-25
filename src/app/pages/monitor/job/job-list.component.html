@@ -1,0 +1,184 @@
+<div class="ry-page">
+  <section class="ry-panel">
+    @if (showSearch) {
+      <form nz-form nzLayout="inline" class="ry-search-form">
+        <nz-form-item>
+          <nz-form-label>任务名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qJobName" placeholder="请输入任务名称" [(ngModel)]="queryParams.jobName" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>任务组名</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qJobGroup" [(ngModel)]="queryParams.jobGroup" nzPlaceHolder="请选择" nzAllowClear class="w-160">
+              @for (g of jobGroups; track g) {
+                <nz-option [nzValue]="g" [nzLabel]="g" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>任务状态</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qStatus" [(ngModel)]="queryParams.status" nzPlaceHolder="请选择" nzAllowClear class="w-160">
+              @for (d of statusDict; track d.value) {
+                <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" type="button" (click)="load()"><span nz-icon nzType="search"></span> 搜索</button>
+          <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+        </nz-form-item>
+      </form>
+    }
+
+    <div class="ry-toolbar">
+      <button nz-button nzType="primary" type="button" (click)="openAdd()"><span nz-icon nzType="plus"></span> 新增</button>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="openEdit()"><span nz-icon nzType="edit"></span> 修改</button>
+      <button nz-button nzDanger nzType="default" type="button" [disabled]="multipleDisabled" (click)="batchDelete()">
+        <span nz-icon nzType="delete"></span> 删除
+      </button>
+      <button nz-button nzType="default" type="button" (click)="export()"><span nz-icon nzType="download"></span> 导出</button>
+      <a nz-button nzType="default" routerLink="/monitor/job-log"><span nz-icon nzType="file-text"></span> 调度日志</a>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="runChecked()"><span nz-icon nzType="caret-right"></span> 执行一次</button>
+      <div class="ry-toolbar-spacer"></div>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+        <span nz-icon nzType="search"></span>
+      </button>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+    </div>
+
+    <nz-table
+      #dataTable
+      nzSize="middle"
+      [nzData]="list"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageSize]="queryParams.pageSize!"
+      [nzPageIndex]="queryParams.pageNum!"
+      [nzFrontPagination]="false"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'48px'">
+            <label nz-checkbox [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></label>
+          </th>
+          <th>任务编号</th>
+          <th>任务名称</th>
+          <th>任务组名</th>
+          <th>调用目标</th>
+          <th>cron</th>
+          <th [nzWidth]="'100px'">状态</th>
+          <th [nzWidth]="'220px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of dataTable.data; track row.jobId) {
+          <tr>
+            <td>
+              <label nz-checkbox [nzChecked]="checkedIds.has(row.jobId!)" (nzCheckedChange)="onCheckOne(row.jobId!, $event)"></label>
+            </td>
+            <td>{{ row.jobId }}</td>
+            <td>{{ row.jobName }}</td>
+            <td>{{ row.jobGroup }}</td>
+            <td nz-tooltip [nzTooltipTitle]="row.invokeTarget"><span class="ry-cell-ellipsis">{{ row.invokeTarget }}</span></td>
+            <td>{{ row.cronExpression }}</td>
+            <td>
+              <nz-switch
+                [ngModelOptions]="{ standalone: true }"
+                [ngModel]="row.status === '0'"
+                (ngModelChange)="onStatusChange(row, $event)"
+              />
+            </td>
+            <td>
+              <a [routerLink]="['/monitor/job-log']" [queryParams]="{ jobId: row.jobId, jobName: row.jobName }">日志</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="openEdit(row)">修改</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="runOne(row)">执行一次</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a class="danger-link" (click)="removeOne(row)">删除</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>
+
+<nz-modal
+  [(nzVisible)]="modalOpen"
+  [nzTitle]="modalTitle"
+  [nzOkLoading]="modalLoading"
+  (nzOnCancel)="closeModal()"
+  (nzOnOk)="submitModal()"
+  nzWidth="640px"
+>
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>任务名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="jobName" [(ngModel)]="form.jobName" maxlength="64" placeholder="任务名称" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>任务分组</nz-form-label>
+        <nz-form-control>
+          <nz-select name="jobGroup" [(ngModel)]="form.jobGroup" class="w-full">
+            @for (g of jobGroups; track g) {
+              <nz-option [nzValue]="g" [nzLabel]="g" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>调用方法</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="invokeTarget" [(ngModel)]="form.invokeTarget" maxlength="500" placeholder="如：ryTask.ryNoParams" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>cron表达式</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="cronExpression" [(ngModel)]="form.cronExpression" maxlength="255" placeholder="cron" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>执行策略</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group name="misfirePolicy" [(ngModel)]="form.misfirePolicy">
+            <label nz-radio nzValue="1">立即执行</label>
+            <label nz-radio nzValue="2">执行一次</label>
+            <label nz-radio nzValue="3">放弃执行</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>是否并发</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group name="concurrent" [(ngModel)]="form.concurrent">
+            <label nz-radio nzValue="0">允许</label>
+            <label nz-radio nzValue="1">禁止</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>状态</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group name="formStatus" [(ngModel)]="form.status">
+            @for (d of statusDict; track d.value) {
+              <label nz-radio [nzValue]="d.value">{{ d.label }}</label>
+            }
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

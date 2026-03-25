@@ -1,0 +1,74 @@
+<ng-template #totalTableTpl let-total>共 {{ total }} 条</ng-template>
+
+<div class="ry-page">
+  <section class="ry-panel">
+    <form nz-form nzLayout="inline" class="ry-search-form">
+      <nz-form-item>
+        <nz-form-label>登录地址</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="qIp" placeholder="请输入登录地址" [(ngModel)]="queryParams.ipaddr" (keyup.enter)="search()" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>用户名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="qUser" placeholder="请输入用户名称" [(ngModel)]="queryParams.userName" (keyup.enter)="search()" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <button nz-button nzType="primary" type="button" (click)="search()"><span nz-icon nzType="search"></span> 搜索</button>
+        <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+      </nz-form-item>
+    </form>
+
+    <nz-table
+      #dataTable
+      nzSize="middle"
+      nzTableLayout="fixed"
+      [nzData]="list"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageSize]="queryParams.pageSize!"
+      [nzPageIndex]="queryParams.pageNum!"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="true"
+      [nzShowTotal]="totalTableTpl"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'64px'">序号</th>
+          <th [nzWidth]="'200px'">会话编号</th>
+          <th [nzWidth]="'100px'">登录名称</th>
+          <th [nzWidth]="'120px'">部门名称</th>
+          <th [nzWidth]="'120px'">主机</th>
+          <th>登录地点</th>
+          <th [nzWidth]="'120px'">浏览器</th>
+          <th [nzWidth]="'140px'">操作系统</th>
+          <th [nzWidth]="'168px'">登录时间</th>
+          <th [nzWidth]="'88px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of dataTable.data; track row.tokenId; let i = $index) {
+          <tr>
+            <td>{{ (queryParams.pageNum! - 1) * queryParams.pageSize! + i + 1 }}</td>
+            <td nz-tooltip [nzTooltipTitle]="row.tokenId"><span class="ry-cell-ellipsis ry-cell-ellipsis--token">{{ row.tokenId }}</span></td>
+            <td>{{ row.userName }}</td>
+            <td>{{ row.deptName }}</td>
+            <td>{{ row.ipaddr }}</td>
+            <td><span class="ry-cell-ellipsis">{{ row.loginLocation }}</span></td>
+            <td><span class="ry-cell-ellipsis">{{ row.browser }}</span></td>
+            <td><span class="ry-cell-ellipsis">{{ row.os }}</span></td>
+            <td>{{ formatLoginTime(row.loginTime) }}</td>
+            <td>
+              <button nz-button nzType="link" nzSize="small" type="button" (click)="forceLogout(row)">强退</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>

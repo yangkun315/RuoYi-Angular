@@ -1,0 +1,182 @@
+.dashboard-analysis {
+  padding-bottom: 24px;
+}
+
+.dashboard-analysis__top {
+  margin-bottom: 16px;
+
+  ::ng-deep .ant-card-body {
+    padding-top: 8px;
+  }
+}
+
+.analysis-tabs-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.analysis-tabs-head__tabs {
+  flex: 1;
+  min-width: 200px;
+}
+
+.tab-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.block-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chart {
+  width: 100%;
+}
+
+.chart--bar {
+  height: 300px;
+}
+
+.chart--line {
+  height: 320px;
+}
+
+.chart--pie {
+  height: 360px;
+}
+
+.chart--store-line {
+  height: 320px;
+  margin-top: 16px;
+}
+
+.rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rank-list__item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rank-list__badge {
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  border-radius: 50%;
+  background: #f0f0f0;
+  font-size: 12px;
+  margin-right: 12px;
+}
+
+.rank-list__badge--top {
+  background: #314659;
+  color: #fff;
+}
+
+.rank-list__name {
+  flex: 1;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.rank-list__num {
+  font-weight: 500;
+}
+
+.dashboard-analysis__mid {
+  margin-bottom: 16px;
+}
+
+.mini-metric {
+  padding: 8px 0 16px;
+}
+
+.mini-metric__label {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+}
+
+.mini-metric__value {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.mini-metric__trend {
+  font-size: 13px;
+}
+
+.mini-metric__trend--up {
+  color: #cf1322;
+}
+
+.mini-metric__trend--down {
+  color: #3f8600;
+}
+
+.trend-up {
+  color: #cf1322;
+}
+
+.trend-down {
+  color: #3f8600;
+}
+
+.store-strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.store-card {
+  flex: 0 0 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.store-card--active {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.store-card__name {
+  font-weight: 600;
+}
+
+.store-card__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.store-card__pct {
+  font-weight: 500;
+}
+
+.store-card nz-progress {
+  align-self: center;
+}

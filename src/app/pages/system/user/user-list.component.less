@@ -1,0 +1,99 @@
+.user-page {
+  padding: 0;
+}
+
+.user-layout {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  min-height: calc(100vh - 120px);
+}
+
+.dept-panel {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 12px;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #f0f0f0;
+}
+
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #f0f0f0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.mb-md {
+  margin-bottom: 16px;
+}
+
+/* 搜索区：换行后与上一行留出间距（inline 表单项默认 margin-bottom: 0） */
+.user-search-form.ant-form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: 14px;
+  column-gap: 0;
+  margin-bottom: 16px;
+  padding: 14px 16px 16px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+.user-search-form.ant-form-inline .ant-form-item {
+  margin-bottom: 0;
+}
+
+.ml-sm {
+  margin-left: 8px;
+}
+
+.mt-md {
+  margin-top: 16px;
+}
+
+.w-160 {
+  width: 160px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.danger-link {
+  color: #ff4d4f;
+  cursor: pointer;
+}
+
+.import-template-link {
+  margin-top: 12px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .user-layout {
+    flex-direction: column;
+  }
+
+  .dept-panel {
+    width: 100%;
+  }
+}

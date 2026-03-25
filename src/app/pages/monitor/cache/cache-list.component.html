@@ -1,0 +1,186 @@
+<div class="ry-cache-page">
+  <nz-row [nzGutter]="16">
+    <!-- 缓存列表 -->
+    <nz-col [nzXs]="24" [nzLg]="8">
+      <nz-card class="ry-cache-card" [nzBordered]="true" [nzTitle]="tplTitleNames" [nzExtra]="tplExtraNames">
+        <ng-template #tplTitleNames>
+          <span class="ry-cache-card__title">
+            <span nz-icon nzType="block"></span>
+            缓存列表
+          </span>
+        </ng-template>
+        <ng-template #tplExtraNames>
+          <span class="ry-cache-card__extra">
+            <button nz-button nzType="text" type="button" nz-tooltip nzTooltipTitle="刷新" (click)="loadNames()">
+              <span nz-icon nzType="reload"></span>
+            </button>
+          </span>
+        </ng-template>
+        <div class="ry-cache-table-wrap">
+          <nz-spin [nzSpinning]="namesLoading">
+            <nz-table
+              nzSize="middle"
+              [nzData]="cacheNames"
+              [nzShowPagination]="false"
+              [nzFrontPagination]="false"
+              [nzScroll]="{ y: tableScrollY }"
+            >
+              <thead>
+                <tr>
+                  <th nzWidth="56px">序号</th>
+                  <th>缓存名称</th>
+                  <th>备注</th>
+                  <th nzWidth="72px">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of cacheNames; track row.cacheName; let i = $index) {
+                  <tr
+                    [class.ry-cache-row-selected]="row.cacheName === selectedName"
+                    (click)="selectCacheName(row.cacheName!)"
+                  >
+                    <td>{{ i + 1 }}</td>
+                    <td nzBreakWord>{{ row.cacheName }}</td>
+                    <td nzBreakWord>{{ row.remark || '—' }}</td>
+                    <td (click)="$event.stopPropagation()">
+                      <button
+                        nz-button
+                        nzType="link"
+                        type="button"
+                        class="p-0"
+                        nz-tooltip
+                        nzTooltipTitle="清理此缓存"
+                        (click)="clearCacheNameRow(row)"
+                      >
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </nz-table>
+          </nz-spin>
+        </div>
+      </nz-card>
+    </nz-col>
+
+    <!-- 键名列表 -->
+    <nz-col [nzXs]="24" [nzLg]="8">
+      <nz-card class="ry-cache-card" [nzBordered]="true" [nzTitle]="tplTitleKeys" [nzExtra]="tplExtraKeys">
+        <ng-template #tplTitleKeys>
+          <span class="ry-cache-card__title">
+            <span nz-icon nzType="key"></span>
+            键名列表
+          </span>
+        </ng-template>
+        <ng-template #tplExtraKeys>
+          <span class="ry-cache-card__extra">
+            <button
+              nz-button
+              nzType="text"
+              type="button"
+              nz-tooltip
+              nzTooltipTitle="刷新"
+              [disabled]="!selectedName"
+              (click)="refreshKeys()"
+            >
+              <span nz-icon nzType="reload"></span>
+            </button>
+          </span>
+        </ng-template>
+        <div class="ry-cache-table-wrap">
+          <nz-spin [nzSpinning]="keysLoading">
+            <nz-table
+              nzSize="middle"
+              [nzData]="cacheKeys"
+              [nzShowPagination]="false"
+              [nzFrontPagination]="false"
+              [nzScroll]="{ y: tableScrollY }"
+            >
+              <thead>
+                <tr>
+                  <th nzWidth="56px">序号</th>
+                  <th>缓存键名</th>
+                  <th nzWidth="72px">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (k of cacheKeys; track k; let j = $index) {
+                  <tr [class.ry-cache-row-selected]="k === selectedKey" (click)="selectKey(k)">
+                    <td>{{ j + 1 }}</td>
+                    <td nzBreakWord>{{ k }}</td>
+                    <td (click)="$event.stopPropagation()">
+                      <button
+                        nz-button
+                        nzType="link"
+                        type="button"
+                        class="p-0"
+                        nz-tooltip
+                        nzTooltipTitle="清理此键"
+                        (click)="clearCacheKeyRow(k)"
+                      >
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </nz-table>
+          </nz-spin>
+        </div>
+      </nz-card>
+    </nz-col>
+
+    <!-- 缓存内容 -->
+    <nz-col [nzXs]="24" [nzLg]="8">
+      <nz-card class="ry-cache-card" [nzBordered]="true" [nzTitle]="tplTitleValue" [nzExtra]="tplExtraValue">
+        <ng-template #tplTitleValue>
+          <span class="ry-cache-card__title">
+            <span nz-icon nzType="file-text"></span>
+            缓存内容
+          </span>
+        </ng-template>
+        <ng-template #tplExtraValue>
+          <span class="ry-cache-card__extra">
+            <button
+              nz-button
+              nzType="text"
+              type="button"
+              nz-tooltip
+              nzTooltipTitle="刷新"
+              [disabled]="!selectedName || !selectedKey"
+              (click)="refreshValue()"
+            >
+              <span nz-icon nzType="reload"></span>
+            </button>
+            <button nz-button nzType="primary" nzDanger nzSize="small" type="button" (click)="clearAll()">清理全部</button>
+          </span>
+        </ng-template>
+        <div class="ry-cache-content-form">
+          <nz-spin [nzSpinning]="valueLoading">
+            <form nz-form nzLayout="vertical">
+              <nz-form-item>
+                <nz-form-label>缓存名称</nz-form-label>
+                <nz-form-control>
+                  <input nz-input [value]="selectedName || ''" readonly />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label>缓存键名</nz-form-label>
+                <nz-form-control>
+                  <input nz-input [value]="selectedKey || ''" readonly />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label>缓存内容</nz-form-label>
+                <nz-form-control>
+                  <textarea nz-input readonly rows="12" [value]="cacheValueDisplay"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </form>
+          </nz-spin>
+        </div>
+      </nz-card>
+    </nz-col>
+  </nz-row>
+</div>

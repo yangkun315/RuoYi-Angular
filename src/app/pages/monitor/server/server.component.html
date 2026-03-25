@@ -1,0 +1,106 @@
+<div class="ry-server-page">
+  @if (errorMsg) {
+    <nz-alert nzType="error" [nzMessage]="errorMsg" nzShowIcon class="mb-md"></nz-alert>
+  }
+
+  <nz-spin [nzSpinning]="loading">
+    <nz-row [nzGutter]="[16, 16]">
+      <!-- CPU -->
+      <nz-col [nzXs]="24" [nzLg]="12">
+        <nz-card nzTitle="CPU" [nzBordered]="true" class="ry-server-card">
+          <nz-descriptions nzBordered [nzColumn]="1" nzSize="middle">
+            @for (r of cpuRows; track r.label) {
+              <nz-descriptions-item [nzTitle]="r.label">{{ r.value }}</nz-descriptions-item>
+            }
+          </nz-descriptions>
+        </nz-card>
+      </nz-col>
+
+      <!-- 内存：本机内存 vs JVM -->
+      <nz-col [nzXs]="24" [nzLg]="12">
+        <nz-card nzTitle="内存" [nzBordered]="true" class="ry-server-card">
+          <nz-table nzSize="middle" [nzData]="memRows" [nzShowPagination]="false" [nzFrontPagination]="false">
+            <thead>
+              <tr>
+                <th nzWidth="140px"></th>
+                <th>内存</th>
+                <th>JVM</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of memRows; track row.label) {
+                <tr>
+                  <td>{{ row.label }}</td>
+                  <td nzBreakWord>{{ row.mem }}</td>
+                  <td nzBreakWord>{{ row.jvm }}</td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </nz-card>
+      </nz-col>
+
+      <!-- 服务器信息 -->
+      <nz-col [nzSpan]="24">
+        <nz-card nzTitle="服务器信息" [nzBordered]="true" class="ry-server-card">
+          <nz-descriptions nzBordered [nzColumn]="2" nzSize="middle">
+            @for (r of sysRows; track r.label) {
+              <nz-descriptions-item [nzTitle]="r.label" [nzSpan]="r.span ?? 1">{{ r.value }}</nz-descriptions-item>
+            }
+          </nz-descriptions>
+        </nz-card>
+      </nz-col>
+
+      <!-- Java 虚拟机信息 -->
+      <nz-col [nzSpan]="24">
+        <nz-card nzTitle="Java虚拟机信息" [nzBordered]="true" class="ry-server-card">
+          <nz-descriptions nzBordered [nzColumn]="2" nzSize="middle">
+            @for (r of jvmRows; track r.label) {
+              <nz-descriptions-item [nzTitle]="r.label" [nzSpan]="r.fullWidth ? 2 : 1">
+                @if (r.fullWidth) {
+                  <div class="ry-server-jvm-args">{{ r.value }}</div>
+                } @else {
+                  {{ r.value }}
+                }
+              </nz-descriptions-item>
+            }
+          </nz-descriptions>
+        </nz-card>
+      </nz-col>
+
+      <!-- 磁盘状态 -->
+      @if (diskRows.length) {
+        <nz-col [nzSpan]="24">
+          <nz-card nzTitle="磁盘状态" [nzBordered]="true" class="ry-server-card">
+            <nz-table nzSize="middle" [nzData]="diskRows" [nzShowPagination]="false" [nzFrontPagination]="false">
+              <thead>
+                <tr>
+                  <th>盘符路径</th>
+                  <th>文件系统</th>
+                  <th>盘符类型</th>
+                  <th>总大小</th>
+                  <th>可用大小</th>
+                  <th>已用大小</th>
+                  <th>已用百分比</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of diskRows; track $index) {
+                  <tr>
+                    <td nzBreakWord>{{ row.dirName }}</td>
+                    <td>{{ row.sysTypeName }}</td>
+                    <td>{{ row.typeName }}</td>
+                    <td>{{ row.total }}</td>
+                    <td>{{ row.free }}</td>
+                    <td>{{ row.used }}</td>
+                    <td>{{ row.usage }}</td>
+                  </tr>
+                }
+              </tbody>
+            </nz-table>
+          </nz-card>
+        </nz-col>
+      }
+    </nz-row>
+  </nz-spin>
+</div>

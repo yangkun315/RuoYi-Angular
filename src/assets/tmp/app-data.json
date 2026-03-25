@@ -1,0 +1,145 @@
+{
+  "app": {
+    "name": "若依管理系统",
+    "description": "RuoYi + NG-ALAIN"
+  },
+  "user": {
+    "name": "Admin",
+    "avatar": "./assets/tmp/img/avatar.jpg",
+    "email": "cipchk@qq.com"
+  },
+  "menu": [
+    {
+      "text": "主导航",
+      "i18n": "menu.main",
+      "group": false,
+      "hideInBreadcrumb": true,
+      "children": [
+        {
+          "text": "仪表盘",
+          "i18n": "menu.dashboard",
+          "icon": {
+            "type": "icon",
+            "value": "dashboard"
+          },
+          "children": [
+            {
+              "text": "默认页",
+              "i18n": "menu.dashboard.v1",
+              "link": "/dashboard/welcome"
+            },
+            {
+              "text": "分析页",
+              "i18n": "menu.dashboard.analysis",
+              "link": "/dashboard/analysis"
+            },
+            {
+              "text": "监控页",
+              "i18n": "menu.dashboard.monitor",
+              "link": "/dashboard/monitor"
+            }
+          ]
+        },
+        {
+          "text": "系统管理",
+          "icon": {
+            "type": "icon",
+            "value": "setting"
+          },
+          "children": [
+            {
+              "text": "用户管理",
+              "link": "/system/user"
+            },
+            {
+              "text": "角色管理",
+              "link": "/system/role"
+            },
+            {
+              "text": "菜单管理",
+              "link": "/system/menu"
+            },
+            {
+              "text": "部门管理",
+              "link": "/system/dept"
+            },
+            {
+              "text": "岗位管理",
+              "link": "/system/post"
+            },
+            {
+              "text": "字典管理",
+              "link": "/system/dict"
+            },
+            {
+              "text": "参数设置",
+              "link": "/system/config"
+            },
+            {
+              "text": "通知公告",
+              "link": "/system/notice"
+            }
+          ]
+        },
+        {
+          "text": "系统监控",
+          "icon": {
+            "type": "icon",
+            "value": "eye"
+          },
+          "children": [
+            {
+              "text": "在线用户",
+              "link": "/monitor/online"
+            },
+            {
+              "text": "定时任务",
+              "link": "/monitor/job"
+            },
+            {
+              "text": "调度日志",
+              "link": "/monitor/job-log"
+            },
+            {
+              "text": "操作日志",
+              "link": "/monitor/operlog"
+            },
+            {
+              "text": "登录日志",
+              "link": "/monitor/logininfor"
+            },
+            {
+              "text": "服务监控",
+              "link": "/monitor/server"
+            },
+            {
+              "text": "缓存监控",
+              "link": "/monitor/cache"
+            }
+          ]
+        },
+        {
+          "text": "系统工具",
+          "icon": {
+            "type": "icon",
+            "value": "tool"
+          },
+          "children": [
+            {
+              "text": "代码生成",
+              "link": "/tool/gen"
+            },
+            {
+              "text": "表单构建",
+              "link": "/tool/build"
+            },
+            {
+              "text": "系统接口",
+              "link": "/tool/swagger"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

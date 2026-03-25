@@ -1,0 +1,96 @@
+<div class="dashboard-analysis">
+  <nz-card nzBordered="false" class="dashboard-analysis__top dashboard-welcome__hero">
+    <!--
+    <div class="welcome-head">
+      <h2 class="welcome-head__title">仪表盘</h2>
+      <p class="welcome-head__desc">欢迎回来，这是您的数据概览。</p>
+    </div>
+    -->
+    <div nz-row [nzGutter]="[16, 16]">
+      @for (c of statCards; track c.title) {
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <div
+            class="welcome-kpi-tile"
+            [class.welcome-kpi-tile--blue]="c.tone === 'blue'"
+            [class.welcome-kpi-tile--green]="c.tone === 'green'"
+            [class.welcome-kpi-tile--orange]="c.tone === 'orange'"
+            [class.welcome-kpi-tile--magenta]="c.tone === 'magenta'"
+          >
+            <div class="welcome-kpi-tile__main">
+              <div class="welcome-kpi-tile__value">{{ c.value }}</div>
+              <div class="welcome-kpi-tile__label">{{ c.title }}</div>
+            </div>
+            <div class="welcome-kpi-tile__spark" aria-hidden="true">
+              @for (pct of c.spark; track $index) {
+                <span class="welcome-kpi-tile__bar" [style.height.%]="pct"></span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </nz-card>
+
+  <div nz-row [nzGutter]="[16, 16]" class="dashboard-analysis__mid">
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="销售统计" nzBordered="false" [nzExtra]="salesExtraTpl">
+        <ng-template #salesExtraTpl>
+          <span class="card-extra">业务预期与零售销售统计</span>
+        </ng-template>
+        <div echarts [options]="barOption" class="chart chart--bar"></div>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="增长曲线" nzBordered="false" [nzExtra]="growthExtraTpl">
+        <ng-template #growthExtraTpl>
+          <span class="card-extra">业务预期与零售销售统计</span>
+        </ng-template>
+        <div echarts [options]="lineOption" class="chart chart--line"></div>
+      </nz-card>
+    </div>
+  </div>
+
+  <div nz-row [nzGutter]="[16, 16]" class="dashboard-welcome__extra">
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="业务分项占比" nzBordered="false" [nzExtra]="pieExtraTpl">
+        <ng-template #pieExtraTpl>
+          <span class="card-extra">饼图 · 静态示例数据</span>
+        </ng-template>
+        <div echarts [options]="pieOption" class="chart chart--pie-welcome"></div>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="指标趋势" nzBordered="false" [nzExtra]="trendExtraTpl">
+        <ng-template #trendExtraTpl>
+          <span class="card-extra">折线图 · 多系列对比</span>
+        </ng-template>
+        <div echarts [options]="trendLineOption" class="chart chart--trend-line"></div>
+      </nz-card>
+    </div>
+  </div>
+
+  @if (mapsReady()) {
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzXs="24" nzLg="12">
+        <nz-card nzTitle="中国地图" nzBordered="false" [nzExtra]="cnMapExtraTpl">
+          <ng-template #cnMapExtraTpl>
+            <span class="card-extra">可缩放拖拽 · 示例数据</span>
+          </ng-template>
+          @if (chinaMapOption(); as cnOpt) {
+            <div echarts [options]="cnOpt" class="chart chart--map"></div>
+          }
+        </nz-card>
+      </div>
+      <div nz-col nzXs="24" nzLg="12">
+        <nz-card nzTitle="全球地图" nzBordered="false" [nzExtra]="worldMapExtraTpl">
+          <ng-template #worldMapExtraTpl>
+            <span class="card-extra">世界 · 示例数据</span>
+          </ng-template>
+          @if (worldMapOption(); as wOpt) {
+            <div echarts [options]="wOpt" class="chart chart--map"></div>
+          }
+        </nz-card>
+      </div>
+    </div>
+  }
+</div>

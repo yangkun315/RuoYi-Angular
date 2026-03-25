@@ -1,0 +1,197 @@
+.profile-page {
+  padding: 0;
+}
+
+.profile-page__title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 1.4;
+}
+
+::ng-deep .profile-avatar-modal .ant-modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.mt-md {
+  margin-top: 16px;
+}
+
+.profile-card {
+  height: 100%;
+  min-height: 520px;
+}
+
+.profile-card__avatar {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 8px;
+}
+
+.profile-card__avatar--btn {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 16px 0 8px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+
+    .profile-card__avatar-plus {
+      color: #0958d9;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1677ff;
+    outline-offset: 2px;
+  }
+}
+
+/* 头像正中「+」：示意可上传/更换，点击整块按钮打开修改头像弹窗 */
+.profile-card__avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.profile-card__avatar-plus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1677ff;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.profile-avatar-modal-row {
+  margin-bottom: 0;
+}
+
+/* 图1：方形裁剪区 + 棋盘格底，接近若依/vue-cropper */
+.profile-avatar-crop-wrap {
+  min-height: 260px;
+  max-height: 360px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: repeating-conic-gradient(#dcdcdc 0% 25%, #f0f0f0 0% 50%) 50% / 12px 12px;
+  border: 1px solid #f0f0f0;
+}
+
+.profile-avatar-crop-wrap ::ng-deep .ngx-ic-overlay {
+  overflow: hidden;
+}
+
+/* 底部工具栏：小方钮 */
+.profile-avatar-icon-btn {
+  width: 32px;
+  min-width: 32px !important;
+  height: 32px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar-preview-label {
+  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+.profile-avatar-preview-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f0f0f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.profile-avatar-preview-placeholder {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.35);
+  padding: 0 12px;
+  text-align: center;
+}
+
+.profile-avatar-footer-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+.profile-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.profile-info-row__icon {
+  flex: 0 0 20px;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.profile-info-row__label {
+  flex: 0 0 88px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.profile-info-row__value {
+  flex: 1;
+  min-width: 0;
+  color: rgba(0, 0, 0, 0.85);
+  word-break: break-all;
+}
+
+.profile-main-card {
+  min-height: 520px;
+}
+
+.profile-form-actions {
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.profile-form-actions button + button {
+  margin-left: 12px;
+}

@@ -1,0 +1,153 @@
+<div class="ry-page">
+  <section class="ry-panel">
+    @if (showSearch) {
+      <form nz-form nzLayout="inline" class="ry-search-form">
+        <nz-form-item>
+          <nz-form-label>部门名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qDeptName" placeholder="请输入部门名称" [(ngModel)]="queryParams.deptName" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>状态</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qStatus" [(ngModel)]="queryParams.status" nzPlaceHolder="部门状态" nzAllowClear class="w-160">
+              @for (d of statusDict; track d.value) {
+                <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" type="button" (click)="load()"><span nz-icon nzType="search"></span> 搜索</button>
+          <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+        </nz-form-item>
+      </form>
+    }
+
+    <div class="ry-toolbar">
+      <button nz-button nzType="primary" type="button" (click)="openAdd()"><span nz-icon nzType="plus"></span> 新增</button>
+      <button nz-button nzType="default" type="button" (click)="toggleExpandAll()">
+        <span nz-icon [nzType]="allExpanded ? 'compress' : 'expand'"></span>
+        展开/折叠
+      </button>
+      <div class="ry-toolbar-spacer"></div>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+        <span nz-icon nzType="search"></span>
+      </button>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+    </div>
+
+    <nz-table #deptTable nzSize="middle" [nzData]="visibleList" [nzLoading]="loading" [nzShowPagination]="false" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th [nzWidth]="'220px'">部门名称</th>
+          <th [nzWidth]="'88px'">排序</th>
+          <th [nzWidth]="'120px'">负责人</th>
+          <th [nzWidth]="'100px'">状态</th>
+          <th [nzWidth]="'180px'">创建时间</th>
+          <th [nzWidth]="'220px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of deptTable.data; track row.deptId) {
+          <tr>
+            <td
+              [nzIndentSize]="row.level! * indentUnit"
+              [nzShowExpand]="!!row.children?.length"
+              [nzExpand]="row.expand === true"
+              (nzExpandChange)="onExpandChange(row, $event)"
+            >
+              {{ row.deptName }}
+            </td>
+            <td>{{ row.orderNum }}</td>
+            <td>{{ row.leader }}</td>
+            <td>
+              <nz-tag [nzColor]="row.status === '0' ? 'processing' : 'default'">{{ row.status === '0' ? '正常' : '停用' }}</nz-tag>
+            </td>
+            <td>{{ row.createTime }}</td>
+            <td class="ry-tree-actions">
+              <a (click)="openEdit(row)"><span nz-icon nzType="edit"></span> 修改</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="openAdd(row)"><span nz-icon nzType="plus"></span> 新增</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a class="danger-link" (click)="removeOne(row)"><span nz-icon nzType="delete"></span> 删除</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>
+
+<nz-modal
+  [(nzVisible)]="modalOpen"
+  [nzTitle]="modalTitle"
+  [nzOkLoading]="modalLoading"
+  (nzOnCancel)="closeModal()"
+  (nzOnOk)="submitModal()"
+  nzWidth="560px"
+>
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label>上级部门</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            name="parentId"
+            [(ngModel)]="form.parentId"
+            nzAllowClear
+            nzPlaceHolder="选择上级部门"
+            nzShowSearch
+            class="w-full"
+          >
+            <nz-option [nzValue]="0" nzLabel="无（顶级部门）" />
+            @for (opt of parentOptions; track opt.value) {
+              <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>部门名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="deptName" [(ngModel)]="form.deptName" maxlength="30" placeholder="请输入部门名称" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>显示排序</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="orderNum" type="number" [(ngModel)]="form.orderNum" placeholder="顺序" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>负责人</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="leader" [(ngModel)]="form.leader" maxlength="20" placeholder="负责人" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>联系电话</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="phone" [(ngModel)]="form.phone" maxlength="11" placeholder="联系电话" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>邮箱</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="email" [(ngModel)]="form.email" maxlength="50" placeholder="邮箱" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>状态</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group name="formStatus" [(ngModel)]="form.status">
+            @for (d of statusDict; track d.value) {
+              <label nz-radio [nzValue]="d.value">{{ d.label }}</label>
+            }
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

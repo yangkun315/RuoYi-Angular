@@ -1,0 +1,28 @@
+<nz-layout class="main-layout">
+  <nz-sider nzCollapsible [(nzCollapsed)]="collapsed" [nzWidth]="220">
+    <div class="logo">若依</div>
+    <app-sidebar [collapsed]="collapsed" />
+  </nz-sider>
+  <nz-layout>
+    <nz-header class="header">
+    <div class="logo">若依管理系统</div>
+    <div class="header-right">
+      <a nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
+        <span class="user-name">{{ userService.user()?.nickName || userService.user()?.userName }}</span>
+        <span nz-icon nzType="down"></span>
+      </a>
+      <nz-dropdown-menu #userMenu="nzDropdownMenu">
+        <ul nz-menu>
+          <li nz-menu-item><a routerLink="/user/profile">个人中心</a></li>
+          <li nz-menu-item (click)="logout()">退出登录</li>
+        </ul>
+      </nz-dropdown-menu>
+    </div>
+    </nz-header>
+    <nz-content class="content">
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

@@ -1,0 +1,109 @@
+<div class="notice-drop-panel">
+  <nz-tabs nzCentered class="notice-drop-tabs" nzSize="small">
+    <nz-tab nzTitle="通知">
+      @if (notifyItems().length === 0) {
+        <div class="notice-drop-empty">
+          <nz-empty nzNotFoundContent="暂无通知" />
+        </div>
+      } @else {
+        <nz-list class="notice-drop-list" [nzSplit]="false">
+          @for (item of notifyItems(); track item.id) {
+            <nz-list-item
+              class="notice-drop-list__item"
+              [class.notice-drop-list__item--highlight]="item.highlight"
+            >
+              <nz-list-item-meta>
+                <nz-list-item-meta-avatar>
+                  <nz-avatar
+                    class="notice-drop-avatar"
+                    nzSize="large"
+                    [nzIcon]="item.icon"
+                    [style.background]="item.color"
+                    [style.color]="'#fff'"
+                  />
+                </nz-list-item-meta-avatar>
+                <nz-list-item-meta-title>
+                  <span
+                    class="notice-drop-list__title notice-drop-list__title--clamp-2"
+                    [class.notice-drop-list__title--muted]="item.mutedTitle"
+                    >{{ item.title }}</span
+                  >
+                </nz-list-item-meta-title>
+                <nz-list-item-meta-description>
+                  <span class="notice-drop-list__time">{{ item.time }}</span>
+                </nz-list-item-meta-description>
+              </nz-list-item-meta>
+            </nz-list-item>
+          }
+        </nz-list>
+      }
+      <div class="notice-drop-footer">
+        <button nz-button nzType="link" class="notice-drop-footer__btn" (click)="clearNotifications()">清空通知</button>
+      </div>
+    </nz-tab>
+
+    <nz-tab nzTitle="消息">
+      @if (messageItems().length === 0) {
+        <div class="notice-drop-empty">
+          <nz-empty nzNotFoundContent="暂无消息" />
+        </div>
+      } @else {
+        <nz-list class="notice-drop-list notice-drop-list--messages" [nzSplit]="false">
+          @for (item of messageItems(); track item.id) {
+            <nz-list-item class="notice-drop-list__item">
+              <nz-list-item-meta>
+                <nz-list-item-meta-avatar>
+                  <nz-avatar
+                    class="notice-drop-avatar notice-drop-avatar--illust"
+                    nzSize="large"
+                    [nzSrc]="item.avatarUrl"
+                    nzAlt=""
+                  />
+                </nz-list-item-meta-avatar>
+                <nz-list-item-meta-title>
+                  <span class="notice-msg-title notice-drop-list__title--clamp-2">{{ item.title }}</span>
+                </nz-list-item-meta-title>
+                <nz-list-item-meta-description>
+                  <div class="notice-rich-desc">
+                    <div class="notice-rich-desc__text notice-drop-list__title--clamp-2">{{ item.description }}</div>
+                    <div class="notice-drop-list__time">{{ item.time }}</div>
+                  </div>
+                </nz-list-item-meta-description>
+              </nz-list-item-meta>
+            </nz-list-item>
+          }
+        </nz-list>
+      }
+      <div class="notice-drop-footer">
+        <button nz-button nzType="link" class="notice-drop-footer__btn" (click)="clearMessages()">清空消息</button>
+      </div>
+    </nz-tab>
+
+    <nz-tab nzTitle="待办">
+      @if (todoItems().length === 0) {
+        <div class="notice-drop-empty">
+          <nz-empty nzNotFoundContent="暂无待办" />
+        </div>
+      } @else {
+        <nz-list class="notice-drop-list notice-drop-list--todos" [nzSplit]="false">
+          @for (item of todoItems(); track item.id) {
+            <nz-list-item class="notice-drop-list__item notice-todo-item">
+              <div class="notice-todo-item__inner">
+                <div class="notice-todo-item__row">
+                  <span class="notice-todo-item__title notice-drop-list__title--clamp-2">{{ item.title }}</span>
+                  <nz-tag [nzColor]="item.statusVariant" nzBordered class="notice-todo-item__tag">
+                    {{ item.status }}
+                  </nz-tag>
+                </div>
+                <div class="notice-todo-item__desc notice-drop-list__title--clamp-2">{{ item.description }}</div>
+              </div>
+            </nz-list-item>
+          }
+        </nz-list>
+      }
+      <div class="notice-drop-footer">
+        <button nz-button nzType="link" class="notice-drop-footer__btn" (click)="clearTodos()">清空待办</button>
+      </div>
+    </nz-tab>
+  </nz-tabs>
+</div>

@@ -1,0 +1,148 @@
+<div class="ry-page">
+  <section class="ry-panel">
+    @if (showSearch) {
+      <form nz-form nzLayout="inline" class="ry-search-form">
+        <nz-form-item>
+          <nz-form-label>参数名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qConfigName" placeholder="请输入参数名称" [(ngModel)]="queryParams.configName" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>参数键名</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qConfigKey" placeholder="请输入参数键名" [(ngModel)]="queryParams.configKey" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>系统内置</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qConfigType" [(ngModel)]="queryParams.configType" nzPlaceHolder="是否内置" nzAllowClear class="w-160">
+              @for (d of builtInDict; track d.value) {
+                <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" type="button" (click)="load()"><span nz-icon nzType="search"></span> 搜索</button>
+          <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+        </nz-form-item>
+      </form>
+    }
+
+    <div class="ry-toolbar">
+      <button nz-button nzType="primary" type="button" (click)="openAdd()"><span nz-icon nzType="plus"></span> 新增</button>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="openEdit()"><span nz-icon nzType="edit"></span> 修改</button>
+      <button nz-button nzDanger nzType="default" type="button" [disabled]="multipleDisabled" (click)="batchDelete()">
+        <span nz-icon nzType="delete"></span> 删除
+      </button>
+      <button nz-button nzType="default" type="button" (click)="export()"><span nz-icon nzType="download"></span> 导出</button>
+      <button nz-button nzType="default" type="button" (click)="refreshCache()"><span nz-icon nzType="sync"></span> 刷新缓存</button>
+      <div class="ry-toolbar-spacer"></div>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+        <span nz-icon nzType="search"></span>
+      </button>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+    </div>
+
+    <nz-table
+      #dataTable
+      nzSize="middle"
+      [nzData]="list"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageSize]="queryParams.pageSize!"
+      [nzPageIndex]="queryParams.pageNum!"
+      [nzFrontPagination]="false"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'48px'">
+            <label nz-checkbox [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></label>
+          </th>
+          <th>参数主键</th>
+          <th>参数名称</th>
+          <th>参数键名</th>
+          <th>参数键值</th>
+          <th [nzWidth]="'100px'">系统内置</th>
+          <th>备注</th>
+          <th>创建时间</th>
+          <th [nzWidth]="'200px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of dataTable.data; track row.configId) {
+          <tr>
+            <td>
+              <label nz-checkbox [nzChecked]="checkedIds.has(row.configId!)" (nzCheckedChange)="onCheckOne(row.configId!, $event)"></label>
+            </td>
+            <td>{{ row.configId }}</td>
+            <td>{{ row.configName }}</td>
+            <td>{{ row.configKey }}</td>
+            <td nz-tooltip [nzTooltipTitle]="row.configValue"><span class="ry-cell-ellipsis">{{ row.configValue }}</span></td>
+            <td>{{ row.configType === 'Y' ? '是' : '否' }}</td>
+            <td nz-tooltip [nzTooltipTitle]="row.remark"><span class="ry-cell-ellipsis">{{ row.remark }}</span></td>
+            <td>{{ row.createTime }}</td>
+            <td>
+              <a (click)="openEdit(row)">修改</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a class="danger-link" (click)="removeOne(row)">删除</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>
+
+<nz-modal
+  [(nzVisible)]="modalOpen"
+  [nzTitle]="modalTitle"
+  [nzOkLoading]="modalLoading"
+  (nzOnCancel)="closeModal()"
+  (nzOnOk)="submitModal()"
+  nzWidth="560px"
+>
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>参数名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="configName" [(ngModel)]="form.configName" maxlength="100" placeholder="请输入参数名称" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>参数键名</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="configKey" [(ngModel)]="form.configKey" maxlength="100" placeholder="请输入参数键名" [disabled]="isEdit" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>参数键值</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="configValue" [(ngModel)]="form.configValue" maxlength="500" placeholder="请输入参数键值" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>系统内置</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group name="formConfigType" [(ngModel)]="form.configType">
+            @for (d of builtInDict; track d.value) {
+              <label nz-radio [nzValue]="d.value">{{ d.label }}</label>
+            }
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>备注</nz-form-label>
+        <nz-form-control>
+          <textarea nz-input name="remark" [(ngModel)]="form.remark" rows="2" placeholder="备注"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

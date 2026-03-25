@@ -1,0 +1,121 @@
+/* 若依风格列表主区（与用户管理右侧主区一致，各业务页复用 class） */
+.ry-page {
+  padding: 0;
+}
+
+.ry-panel {
+  padding: 12px;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #f0f0f0;
+}
+
+.ry-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ry-toolbar-spacer {
+  flex: 1;
+  min-width: 0; /* 避免仅「占位 + 右侧图标」时 flex 子项把整行撑开产生大块空白 */
+}
+
+.ry-search-form.ant-form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: 14px;
+  column-gap: 0;
+  margin-bottom: 16px;
+  padding: 14px 16px 16px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+.ry-search-form.ant-form-inline .ant-form-item {
+  margin-bottom: 0;
+}
+
+.ry-split {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  min-height: calc(100vh - 120px);
+}
+
+.ry-split-side {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 12px;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #f0f0f0;
+}
+
+.ry-split-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.mb-md {
+  margin-bottom: 16px;
+}
+
+.ml-sm {
+  margin-left: 8px;
+}
+
+.w-160 {
+  width: 160px;
+}
+
+.w-200 {
+  width: 200px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.danger-link {
+  color: #ff4d4f;
+  cursor: pointer;
+}
+
+.ry-cell-ellipsis {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* 固定列宽表格内：随列宽收缩，避免会话编号等列撑破布局 */
+.ry-cell-ellipsis--token {
+  max-width: 100%;
+  display: block;
+}
+
+.ry-pre {
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .ry-split {
+    flex-direction: column;
+  }
+
+  .ry-split-side {
+    width: 100%;
+  }
+}

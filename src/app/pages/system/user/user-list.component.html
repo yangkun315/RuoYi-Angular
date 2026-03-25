@@ -1,0 +1,388 @@
+<ng-template #totalTableTpl let-total>共 {{ total }} 条</ng-template>
+
+<div class="user-page">
+  <div class="user-layout">
+    <aside class="dept-panel">
+      <nz-input-group nzPrefixIcon="search" class="mb-md">
+        <input type="text" nz-input placeholder="请输入部门名称" [(ngModel)]="deptFilterText" />
+      </nz-input-group>
+      <nz-tree
+        nzBlockNode
+        [nzData]="deptNzNodes"
+        [nzSearchValue]="deptFilterText"
+        [nzSelectedKeys]="selectedDeptKeys"
+        [nzExpandedKeys]="deptExpandedKeys"
+        (nzClick)="onDeptTreeClick($event)"
+      />
+    </aside>
+
+    <section class="main-panel">
+      @if (showSearch) {
+        <form nz-form nzLayout="inline" class="user-search-form">
+          <nz-form-item>
+            <nz-form-label>用户名称</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                name="qUserName"
+                placeholder="请输入用户名称"
+                [(ngModel)]="queryParams.userName"
+                (keyup.enter)="handleQuery()"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>手机号码</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                name="qPhonenumber"
+                placeholder="请输入手机号码"
+                [(ngModel)]="queryParams.phonenumber"
+                (keyup.enter)="handleQuery()"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>状态</nz-form-label>
+            <nz-form-control>
+              <nz-select name="qStatus" [(ngModel)]="queryParams.status" nzPlaceHolder="用户状态" nzAllowClear class="w-160">
+                @for (d of statusDict; track d.value) {
+                  <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>创建时间</nz-form-label>
+            <nz-form-control>
+              <nz-range-picker name="qDateRange" [(ngModel)]="dateRange" nzFormat="yyyy-MM-dd"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <button nz-button nzType="primary" type="button" (click)="handleQuery()"><span nz-icon nzType="search"></span> 搜索</button>
+            <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+          </nz-form-item>
+        </form>
+      }
+
+      <div class="toolbar">
+        <button nz-button nzType="primary" type="button" (click)="handleAdd()"><span nz-icon nzType="plus"></span> 新增</button>
+        <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="handleUpdate()"><span nz-icon nzType="edit"></span> 修改</button>
+        <button nz-button nzDanger nzType="default" type="button" [disabled]="multipleDisabled" (click)="handleBatchDelete()">
+          <span nz-icon nzType="delete"></span> 删除
+        </button>
+        <button nz-button nzType="default" type="button" (click)="openImport()"><span nz-icon nzType="upload"></span> 导入</button>
+        <button nz-button nzType="default" type="button" (click)="handleExport()"><span nz-icon nzType="download"></span> 导出</button>
+        <div class="toolbar-spacer"></div>
+        <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+          <span nz-icon nzType="search"></span>
+        </button>
+        <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+        <button nz-button nzType="text" nz-tooltip nzTooltipTitle="列设置" nz-dropdown [nzDropdownMenu]="colMenu" nzTrigger="click" type="button">
+          <span nz-icon nzType="block"></span>
+        </button>
+        <nz-dropdown-menu #colMenu="nzDropdownMenu">
+          <ul nz-menu>
+            @for (c of columnDefs; track c.key) {
+              <li nz-menu-item (click)="$event.stopPropagation()">
+                <label
+                  nz-checkbox
+                  [ngModelOptions]="{ standalone: true }"
+                  [(ngModel)]="columns[c.key]"
+                  (ngModelChange)="cdr.markForCheck()"
+                  >{{ c.label }}</label
+                >
+              </li>
+            }
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+
+      <nz-table
+        #userTable
+        nzSize="middle"
+        [nzData]="list"
+        [nzLoading]="loading"
+        [nzTotal]="total"
+        [nzPageSize]="queryParams.pageSize!"
+        [nzPageIndex]="queryParams.pageNum!"
+        [nzFrontPagination]="false"
+        [nzShowTotal]="totalTableTpl"
+        nzShowSizeChanger
+        [nzPageSizeOptions]="[10, 20, 50, 100]"
+        (nzQueryParams)="onTableQueryParams($event)"
+      >
+        <thead>
+          <tr>
+            <th [nzWidth]="'48px'">
+              <label
+                nz-checkbox
+                [nzChecked]="checkedAll"
+                [nzIndeterminate]="indeterminate"
+                (nzCheckedChange)="onAllChecked($event)"
+              ></label>
+            </th>
+            @if (columns['userId']) {
+              <th>用户编号</th>
+            }
+            @if (columns['userName']) {
+              <th>用户名称</th>
+            }
+            @if (columns['nickName']) {
+              <th>用户昵称</th>
+            }
+            @if (columns['deptName']) {
+              <th>部门</th>
+            }
+            @if (columns['phonenumber']) {
+              <th>手机号码</th>
+            }
+            @if (columns['status']) {
+              <th>状态</th>
+            }
+            @if (columns['createTime']) {
+              <th>创建时间</th>
+            }
+            <th nzWidth="200px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of userTable.data; track row.userId) {
+            <tr>
+              <td>
+                <label
+                  nz-checkbox
+                  [nzChecked]="setOfCheckedId.has(row.userId!)"
+                  [nzDisabled]="row.userId === 1"
+                  (nzCheckedChange)="onItemChecked(row.userId!, $event)"
+                ></label>
+              </td>
+              @if (columns['userId']) {
+                <td>{{ row.userId }}</td>
+              }
+              @if (columns['userName']) {
+                <td>{{ row.userName }}</td>
+              }
+              @if (columns['nickName']) {
+                <td>{{ row.nickName }}</td>
+              }
+              @if (columns['deptName']) {
+                <td>{{ row.dept?.deptName }}</td>
+              }
+              @if (columns['phonenumber']) {
+                <td>{{ row.phonenumber }}</td>
+              }
+              @if (columns['status']) {
+                <td>
+                  <nz-switch
+                    [ngModelOptions]="{ standalone: true }"
+                    [ngModel]="row.status === '0'"
+                    (ngModelChange)="onStatusChange(row, $event)"
+                    [nzDisabled]="row.userId === 1"
+                  />
+                </td>
+              }
+              @if (columns['createTime']) {
+                <td>{{ row.createTime }}</td>
+              }
+              <td>
+                @if (row.userId !== 1) {
+                  <a (click)="handleUpdate(row)">修改</a>
+                  <nz-divider nzType="vertical"></nz-divider>
+                  <a class="danger-link" (click)="handleDelete(row)">删除</a>
+                  <nz-divider nzType="vertical"></nz-divider>
+                  <a nz-dropdown [nzDropdownMenu]="moreMenu" (click)="moreRow = row">更多 <span nz-icon nzType="down"></span></a>
+                  <nz-dropdown-menu #moreMenu="nzDropdownMenu">
+                    <ul nz-menu>
+                      <li nz-menu-item (click)="openResetPwd(moreRow!)">重置密码</li>
+                      <li nz-menu-item (click)="handleAuthRole(moreRow!)">分配角色</li>
+                    </ul>
+                  </nz-dropdown-menu>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </section>
+  </div>
+</div>
+
+<nz-modal
+  [(nzVisible)]="modalOpen"
+  [nzTitle]="modalTitle"
+  [nzWidth]="640"
+  (nzOnCancel)="closeModal()"
+  (nzOnOk)="submitForm()"
+  [nzOkLoading]="modalSubmitting"
+>
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical">
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>用户昵称</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="form.nickName" name="nickName" maxlength="30" placeholder="请输入用户昵称" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>归属部门</nz-form-label>
+            <nz-form-control>
+              <nz-tree-select
+                class="w-full"
+                nzShowSearch
+                nzPlaceHolder="请选择归属部门"
+                [(ngModel)]="form.deptId"
+                name="deptId"
+                [nzNodes]="deptSelectNodes"
+                nzDefaultExpandAll
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>手机号码</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="form.phonenumber" name="phonenumber" maxlength="11" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>邮箱</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="form.email" name="email" maxlength="50" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      @if (form.userId == null) {
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label nzRequired>用户名称</nz-form-label>
+              <nz-form-control>
+                <input nz-input [(ngModel)]="form.userName" name="userName" maxlength="30" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label nzRequired>用户密码</nz-form-label>
+              <nz-form-control>
+                <input nz-input type="password" [(ngModel)]="form.password" name="password" maxlength="20" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      }
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>用户性别</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="form.sex" name="sex" nzPlaceHolder="请选择" nzAllowClear class="w-full">
+                @for (d of sexDict; track d.value) {
+                  <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>状态</nz-form-label>
+            <nz-form-control>
+              <nz-radio-group [(ngModel)]="form.status" name="status">
+                @for (d of statusDict; track d.value) {
+                  <label nz-radio [nzValue]="d.value">{{ d.label }}</label>
+                }
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>岗位</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="form.postIds" name="postIds" nzMode="multiple" nzPlaceHolder="请选择" class="w-full">
+                @for (p of postOptions; track p.postId) {
+                  <nz-option [nzValue]="p.postId" [nzLabel]="p.postName!" [nzDisabled]="p.status === '1'" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>角色</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="form.roleIds" name="roleIds" nzMode="multiple" nzPlaceHolder="请选择" class="w-full">
+                @for (r of roleOptions; track r.roleId) {
+                  <nz-option [nzValue]="r.roleId" [nzLabel]="r.roleName!" [nzDisabled]="r.status === '1'" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <nz-form-item>
+        <nz-form-label>备注</nz-form-label>
+        <nz-form-control>
+          <textarea nz-input [(ngModel)]="form.remark" name="remark" rows="2" placeholder="请输入内容"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="resetPwdOpen"
+  nzTitle="重置密码"
+  (nzOnCancel)="resetPwdOpen = false"
+  (nzOnOk)="submitResetPwd()"
+>
+  <ng-container *nzModalContent>
+    @if (resetPwdUser) {
+      <p>用户「{{ resetPwdUser.userName }}」新密码：</p>
+    }
+    <input
+      nz-input
+      type="password"
+      name="resetPwdValue"
+      [(ngModel)]="resetPwdValue"
+      placeholder="5-20 位，不含非法字符"
+      [ngModelOptions]="{ standalone: true }"
+    />
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="importOpen" nzTitle="用户导入" (nzOnCancel)="importOpen = false" [nzFooter]="null">
+  <ng-container *nzModalContent>
+    <label nz-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="importUpdateSupport"
+      >是否更新已经存在的用户数据</label
+    >
+    <nz-upload
+      class="mt-md"
+      nzType="drag"
+      [nzMultiple]="false"
+      [nzCustomRequest]="customImportRequest"
+      [nzShowUploadList]="true"
+      nzAccept=".xlsx,.xls"
+    >
+      <p class="ant-upload-drag-icon"><span nz-icon nzType="upload"></span></p>
+      <p class="ant-upload-text">点击或拖拽文件到此区域</p>
+      <p class="ant-upload-hint">仅允许 xls、xlsx 格式</p>
+    </nz-upload>
+    <a class="import-template-link" (click)="downloadImportTemplate()">下载模板</a>
+  </ng-container>
+</nz-modal>

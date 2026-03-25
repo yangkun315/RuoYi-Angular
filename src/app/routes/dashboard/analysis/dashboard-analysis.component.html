@@ -1,0 +1,125 @@
+<div class="dashboard-analysis">
+  <nz-card nzBordered="false" class="dashboard-analysis__top">
+    <div class="analysis-tabs-head">
+      <nz-tabs nzSize="large" class="analysis-tabs-head__tabs">
+        <nz-tab nzTitle="销售额"></nz-tab>
+        <nz-tab nzTitle="访问量"></nz-tab>
+      </nz-tabs>
+      <div class="tab-extra">
+        <nz-radio-group [(ngModel)]="rangePreset" nzButtonStyle="solid">
+          <label nz-radio-button nzValue="today">今日</label>
+          <label nz-radio-button nzValue="week">本周</label>
+          <label nz-radio-button nzValue="month">本月</label>
+          <label nz-radio-button nzValue="year">全年</label>
+        </nz-radio-group>
+        <nz-range-picker [(ngModel)]="dateRange" nzFormat="yyyy-MM-dd"></nz-range-picker>
+      </div>
+    </div>
+
+    <div nz-row [nzGutter]="16">
+      <div nz-col nzXs="24" nzLg="16">
+        <h4 class="block-title">销售趋势</h4>
+        <div echarts [options]="salesBarOption" class="chart chart--bar"></div>
+      </div>
+      <div nz-col nzXs="24" nzLg="8">
+        <h4 class="block-title">门店销售额排名</h4>
+        <ul class="rank-list">
+          @for (r of rankStores; track r.rank) {
+            <li class="rank-list__item">
+              <span
+                class="rank-list__badge"
+                [class.rank-list__badge--top]="r.rank <= 3"
+                >{{ r.rank }}</span
+              >
+              <span class="rank-list__name">{{ r.name }}</span>
+              <span class="rank-list__num">{{ r.sales | number }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </nz-card>
+
+  <div nz-row [nzGutter]="[16, 16]" class="dashboard-analysis__mid">
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="线上热门搜索" nzBordered="false" [nzExtra]="hotExtraTpl">
+        <ng-template #hotExtraTpl>
+          <button nz-button nzType="text" nzSize="small"><span nz-icon nzType="more"></span></button>
+        </ng-template>
+        <div nz-row [nzGutter]="16">
+          <div nz-col nzSpan="12">
+            <div class="mini-metric">
+              <div class="mini-metric__label">搜索用户数</div>
+              <div class="mini-metric__value">12,321</div>
+              <div class="mini-metric__trend mini-metric__trend--up">17.1% ↑</div>
+            </div>
+          </div>
+          <div nz-col nzSpan="12">
+            <div class="mini-metric">
+              <div class="mini-metric__label">人均搜索次数</div>
+              <div class="mini-metric__value">2.7</div>
+              <div class="mini-metric__trend mini-metric__trend--down">26.2% ↓</div>
+            </div>
+          </div>
+        </div>
+        <nz-table nzSize="small" [nzData]="hotTable" [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>搜索关键词</th>
+              <th>用户数</th>
+              <th>周涨幅</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of hotTable; track row.keyword) {
+              <tr>
+                <td>{{ row.rank }}</td>
+                <td>{{ row.keyword }}</td>
+                <td>{{ row.users }}</td>
+                <td>
+                  <span [class.trend-up]="row.up" [class.trend-down]="!row.up">
+                    {{ row.weekChange }}% {{ row.up ? '↑' : '↓' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzLg="12">
+      <nz-card nzTitle="销售额类别占比" nzBordered="false" [nzExtra]="channelExtraTpl">
+        <ng-template #channelExtraTpl>
+          <nz-radio-group [(ngModel)]="channel" nzSize="small">
+            <label nz-radio-button nzValue="all">全部渠道</label>
+            <label nz-radio-button nzValue="online">线上</label>
+            <label nz-radio-button nzValue="store">门店</label>
+          </nz-radio-group>
+        </ng-template>
+        <div echarts [options]="pieOption" class="chart chart--pie"></div>
+      </nz-card>
+    </div>
+  </div>
+
+  <nz-card nzTitle="门店转化与客流" nzBordered="false" class="dashboard-analysis__stores">
+    <div class="store-strip">
+      @for (s of stores; track s.id) {
+        <button
+          type="button"
+          class="store-card"
+          [class.store-card--active]="selectedStore() === s.id"
+          (click)="selectStore(s.id)"
+        >
+          <div class="store-card__name">{{ s.name }}</div>
+          <div class="store-card__row">
+            <span class="store-card__label">转化率</span>
+            <span class="store-card__pct">{{ s.rate }}%</span>
+          </div>
+          <nz-progress [nzPercent]="s.rate" nzType="circle" [nzWidth]="40"></nz-progress>
+        </button>
+      }
+    </div>
+    <div echarts [options]="storeLineOption()" class="chart chart--store-line"></div>
+  </nz-card>
+</div>

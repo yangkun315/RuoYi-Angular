@@ -1,0 +1,46 @@
+// You can directly set the default theme
+// - `default` Default theme
+// - `dark` Import the official dark less style file
+// - `compact` Import the official compact less style file
+// - `variable` Import the official compact less style file
+@import '@delon/theme/theme-default.less';
+
+// ==========The following is the custom theme variable area==========
+// NG-ALAIN / Ant Design Pro：主题蓝顶栏 + 白侧栏 + 菜单浅蓝选中（图2）
+
+@alain-default-header-bg: @primary-color;
+@alain-default-header-box-shadow: 0 1px 4px rgba(0, 21, 41, 0.12);
+@alain-default-header-nav-bg-hover: rgba(255, 255, 255, 0.12);
+
+@alain-default-aside-bg: #fff;
+@alain-default-aside-nav-text-color: rgba(0, 0, 0, 0.65);
+@alain-default-aside-nav-text-hover-color: @primary-color;
+@alain-default-aside-nav-group-text-color: rgba(0, 0, 0, 0.45);
+@alain-default-aside-nav-selected-text-color: @primary-color;
+@alain-default-aside-nav-selected-bg: #e6f7ff;
+@alain-default-aside-nav-divider-bg: #f0f0f0;
+@alain-default-content-bg: #f0f2f5;
+
+/* 带子菜单的父级：路由命中时仍带 sidebar-nav__selected，保持白底、不铺选中色 */
+.sidebar-nav__item.sidebar-nav__selected:has(> ul.sidebar-nav__sub) {
+  background-color: transparent !important;
+  border-left-color: transparent !important;
+
+  > .sidebar-nav__item-link {
+    color: @alain-default-aside-nav-text-color !important;
+  }
+
+  > .sidebar-nav__item-link:hover {
+    color: @alain-default-aside-nav-text-hover-color !important;
+  }
+}
+
+/* 末级选中：浅蓝底 + 左侧主题条 + 主题字色 */
+.sidebar-nav__item.sidebar-nav__selected:not(:has(> ul.sidebar-nav__sub)) {
+  background-color: @alain-default-aside-nav-selected-bg !important;
+  border-left-color: @primary-color !important;
+
+  > .sidebar-nav__item-link {
+    color: @primary-color !important;
+  }
+}

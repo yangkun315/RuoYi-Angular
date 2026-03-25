@@ -1,0 +1,109 @@
+@import '../analysis/dashboard-analysis.component.less';
+
+/* 与分析页顶栏卡片一致，仅增加标题区 */
+.dashboard-welcome__hero .welcome-head {
+  margin-bottom: 16px;
+}
+
+.welcome-head__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.welcome-head__desc {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* 参考图1：高饱和 KPI 卡片 + 右侧浅色迷你柱条 */
+.welcome-kpi-tile {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  min-height: 104px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-kpi-tile--blue {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+}
+
+.welcome-kpi-tile--green {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+}
+
+.welcome-kpi-tile--orange {
+  background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
+}
+
+.welcome-kpi-tile--magenta {
+  background: linear-gradient(135deg, #eb2f96 0%, #c41d7f 100%);
+}
+
+.welcome-kpi-tile__main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.welcome-kpi-tile__value {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.welcome-kpi-tile__label {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.92;
+}
+
+.welcome-kpi-tile__spark {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 52px;
+  margin-left: 12px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.welcome-kpi-tile__bar {
+  width: 5px;
+  min-height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.card-extra {
+  max-width: 260px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-welcome__extra {
+  margin-top: 8px;
+}
+
+.chart--pie-welcome {
+  height: 360px;
+}
+
+.chart--trend-line {
+  height: 320px;
+}
+
+.chart--map {
+  height: 420px;
+}

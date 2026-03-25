@@ -1,0 +1,165 @@
+<ng-template #totalTableTpl let-total>共 {{ total }} 条</ng-template>
+<ng-template #dbTotalTpl let-total>共 {{ total }} 条</ng-template>
+
+<div class="ry-page">
+  <section class="ry-panel">
+    @if (showSearch) {
+      <form nz-form nzLayout="inline" class="ry-search-form">
+        <nz-form-item>
+          <nz-form-label>表名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qTable" placeholder="请输入表名称" [(ngModel)]="queryParams.tableName" (keyup.enter)="search()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>表描述</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qComment" placeholder="请输入表描述" [(ngModel)]="queryParams.tableComment" (keyup.enter)="search()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>创建时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker name="qDate" [(ngModel)]="dateRange" nzFormat="yyyy-MM-dd"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" type="button" (click)="search()"><span nz-icon nzType="search"></span> 搜索</button>
+          <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+        </nz-form-item>
+      </form>
+    }
+
+    <div class="ry-toolbar">
+      <button nz-button nzType="primary" type="button" (click)="openImport()"><span nz-icon nzType="import"></span> 导入</button>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="openPreview()"><span nz-icon nzType="eye"></span> 预览</button>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="genCodeChecked()"><span nz-icon nzType="code"></span> 生成代码</button>
+      <button nz-button nzType="default" type="button" [disabled]="singleDisabled" (click)="synchChecked()"><span nz-icon nzType="sync"></span> 同步</button>
+      <button nz-button nzDanger nzType="default" type="button" [disabled]="multipleDisabled" (click)="batchDelete()">
+        <span nz-icon nzType="delete"></span> 删除
+      </button>
+      <div class="ry-toolbar-spacer"></div>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+        <span nz-icon nzType="search"></span>
+      </button>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+    </div>
+
+    <nz-table
+      #dataTable
+      nzSize="middle"
+      [nzData]="list"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageSize]="queryParams.pageSize!"
+      [nzPageIndex]="queryParams.pageNum!"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="true"
+      [nzShowTotal]="totalTableTpl"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'48px'">
+            <label nz-checkbox [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></label>
+          </th>
+          <th>序号</th>
+          <th>表名称</th>
+          <th>表描述</th>
+          <th>实体</th>
+          <th>创建时间</th>
+          <th>更新时间</th>
+          <th [nzWidth]="'240px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of dataTable.data; track trackRow($index, row); let i = $index) {
+          <tr>
+            <td>
+              <label nz-checkbox [nzChecked]="checkedIds.has(row.tableId!)" (nzCheckedChange)="onCheckOne(row.tableId!, $event)"></label>
+            </td>
+            <td>{{ (queryParams.pageNum! - 1) * queryParams.pageSize! + i + 1 }}</td>
+            <td>{{ row.tableName }}</td>
+            <td>{{ row.tableComment }}</td>
+            <td>{{ row.className }}</td>
+            <td>{{ row.createTime }}</td>
+            <td>{{ row.updateTime }}</td>
+            <td>
+              <a (click)="openPreview(row)">预览</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="genCodeOne(row)">生成代码</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="synchOne(row)">同步</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a class="danger-link" (click)="removeOne(row)">删除</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>
+
+<nz-modal
+  [(nzVisible)]="importOpen"
+  nzTitle="导入表结构"
+  [nzOkLoading]="importLoading"
+  (nzOnCancel)="importOpen = false"
+  (nzOnOk)="submitImport()"
+  nzWidth="900px"
+>
+  <ng-container *nzModalContent>
+    <div class="ry-toolbar mb-md">
+      <input nz-input class="w-200" placeholder="表名称" [(ngModel)]="dbQuery.tableName" (keyup.enter)="loadDb()" />
+      <button nz-button nzType="primary" type="button" (click)="loadDb()">搜索</button>
+    </div>
+    <nz-table
+      #dbTable
+      nzSize="small"
+      [nzData]="dbList"
+      [nzLoading]="dbLoading"
+      [nzTotal]="dbTotal"
+      [nzPageSize]="dbQuery.pageSize!"
+      [nzPageIndex]="dbQuery.pageNum!"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="true"
+      [nzShowTotal]="dbTotalTpl"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onDbTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'48px'"></th>
+          <th>表名称</th>
+          <th>表描述</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of dbTable.data; track r.tableName) {
+          <tr>
+            <td>
+              <label nz-checkbox [nzChecked]="importChecked.has(r.tableName!)" (nzCheckedChange)="toggleImportCheck(r.tableName!, $event)"></label>
+            </td>
+            <td>{{ r.tableName }}</td>
+            <td>{{ r.tableComment }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="previewOpen" nzTitle="代码预览" (nzOnCancel)="previewOpen = false" (nzOnOk)="previewOpen = false" nzWidth="900px">
+  <ng-container *nzModalContent>
+    <nz-tabs nzType="card" nzSize="small">
+      @for (e of previewEntries; track e[0]) {
+        <nz-tab [nzTitle]="e[0]">
+          <pre class="ry-pre">{{ e[1] }}</pre>
+        </nz-tab>
+      }
+    </nz-tabs>
+  </ng-container>
+</nz-modal>

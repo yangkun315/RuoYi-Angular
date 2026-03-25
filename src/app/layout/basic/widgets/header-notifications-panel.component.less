@@ -1,0 +1,81 @@
+:host {
+  display: block;
+}
+
+.header-notifications-panel--embedded .notifications-panel {
+  box-shadow: none;
+}
+
+.notifications-panel {
+  width: 360px;
+  max-width: min(360px, 92vw);
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px 16px 12px;
+  box-shadow:
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header-notifications-panel--embedded .notifications-panel {
+  border-radius: 4px;
+  padding: 12px 12px 8px;
+}
+
+.notifications-panel__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.notifications-panel__divider {
+  margin: 12px 0 0;
+}
+
+.notifications-list__item {
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  align-items: flex-start !important;
+}
+
+.notifications-list__item:last-child {
+  border-bottom: none !important;
+}
+
+::ng-deep .notifications-list .ant-list-item-meta-avatar {
+  margin-right: 12px;
+}
+
+::ng-deep .notifications-list .ant-list-item-meta-title {
+  margin-bottom: 6px !important;
+}
+
+.notifications-list__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.notifications-list__desc {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+  line-height: 1.5;
+}
+
+.notifications-panel__footer {
+  text-align: center;
+  padding: 2px 0 6px;
+}
+
+.notifications-panel__see-all {
+  height: auto;
+  padding: 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+
+  &:hover {
+    color: #1890ff;
+  }
+}

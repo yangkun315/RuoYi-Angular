@@ -1,0 +1,16 @@
+<div class="ry-page">
+  <section class="ry-panel mb-md">
+    <div class="ry-toolbar">
+      <span class="ry-swagger-title">系统接口</span>
+      <span class="ry-swagger-desc">Swagger UI（由后端提供，路径随部署环境变化）</span>
+      <div class="ry-toolbar-spacer"></div>
+      <a nz-button nzType="primary" [href]="swaggerPageUrl" target="_blank" rel="noopener noreferrer">
+        <span nz-icon nzType="export"></span> 新窗口打开
+      </a>
+      <button nz-button nzType="default" type="button" (click)="reloadFrame()"><span nz-icon nzType="reload"></span> 刷新</button>
+    </div>
+  </section>
+  <section class="ry-panel ry-swagger-frame-wrap">
+    <iframe #swaggerFrame [src]="swaggerUrl" title="Swagger UI" class="ry-swagger-iframe"></iframe>
+  </section>
+</div>

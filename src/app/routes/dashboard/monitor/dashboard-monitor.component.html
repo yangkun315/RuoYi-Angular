@@ -1,0 +1,65 @@
+<div class="dashboard-monitor">
+  <div nz-row [nzGutter]="[16, 16]">
+    <div nz-col nzXs="24" nzXl="16">
+      <nz-card nzTitle="活动实时交易情况" nzBordered="false" class="monitor-card monitor-card--main">
+        <div nz-row [nzGutter]="[16, 16]" class="monitor-kpis">
+          <div nz-col nzSpan="6">
+            <nz-statistic nzTitle="今日交易总额" nzValue="124,543,233" nzSuffix="元"></nz-statistic>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-statistic nzTitle="销售目标完成率" nzValue="92" nzSuffix="%"></nz-statistic>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-statistic nzTitle="活动剩余时间" nzValue="00:46:37.7"></nz-statistic>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-statistic nzTitle="每秒交易总额" nzValue="234" nzSuffix="元"></nz-statistic>
+          </div>
+        </div>
+        <div echarts [options]="scatterMapOption" class="monitor-map"></div>
+        <div class="monitor-visit-bar">
+          <div class="monitor-visit-bar__title">访问时长</div>
+          <div echarts [options]="visitBarOption" class="monitor-visit-bar__chart"></div>
+        </div>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzXl="8">
+      <nz-card nzBordered="false" class="monitor-side-card" [nzTitle]="forecastTitleTpl">
+        <ng-template #forecastTitleTpl>
+          <span>活动情况预测</span>
+          <nz-tag nzColor="processing" class="monitor-side-card__tag">有望达到预期</nz-tag>
+        </ng-template>
+        <div class="monitor-side-metric">
+          <strong>1382</strong> 亿元 &nbsp; <strong>679</strong> 亿元
+        </div>
+        <div class="monitor-side-card__subtitle">目标评估</div>
+        <div echarts [options]="forecastAreaOption" class="monitor-area"></div>
+      </nz-card>
+      <nz-card nzTitle="券核效率" nzBordered="false" class="monitor-side-card monitor-side-card--gauge">
+        <div echarts [options]="gaugeOption" class="monitor-gauge"></div>
+      </nz-card>
+    </div>
+  </div>
+
+  <div nz-row [nzGutter]="[16, 16]">
+    <div nz-col nzXs="24" nzMd="8">
+      <nz-card nzTitle="各品类占比" nzBordered="false">
+        <div class="triple-donut">
+          @for (opt of categoryDonutOptions; track $index) {
+            <div echarts [options]="opt" class="triple-donut__cell"></div>
+          }
+        </div>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzMd="8">
+      <nz-card nzTitle="热门搜索" nzBordered="false">
+        <g2-tag-cloud [data]="tagData" [height]="220" [width]="320" [padding]="8"></g2-tag-cloud>
+      </nz-card>
+    </div>
+    <div nz-col nzXs="24" nzMd="8">
+      <nz-card nzTitle="资源剩余" nzBordered="false">
+        <div echarts [options]="subsidyPieOption" class="monitor-subsidy"></div>
+      </nz-card>
+    </div>
+  </div>
+</div>

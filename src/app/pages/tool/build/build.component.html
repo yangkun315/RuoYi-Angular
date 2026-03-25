@@ -1,0 +1,16 @@
+<div class="ry-page">
+  <section class="ry-panel mb-md">
+    <div class="ry-toolbar">
+      <span class="ry-build-title">表单构建</span>
+      <span class="ry-build-desc">以下为若依常用的拖拽式表单设计器（外链），生成 JSON 后可配合代码生成或自定义页面使用。</span>
+      <div class="ry-toolbar-spacer"></div>
+      <a nz-button nzType="primary" [href]="builderUrl" target="_blank" rel="noopener noreferrer">
+        <span nz-icon nzType="export"></span> 新窗口打开
+      </a>
+      <button nz-button nzType="default" type="button" (click)="reloadFrame()"><span nz-icon nzType="reload"></span> 刷新内嵌页</button>
+    </div>
+  </section>
+  <section class="ry-panel ry-build-frame-wrap">
+    <iframe #builderFrame [src]="safeUrl" title="表单构建" class="ry-build-iframe"></iframe>
+  </section>
+</div>

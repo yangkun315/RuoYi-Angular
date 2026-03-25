@@ -1,0 +1,142 @@
+<div class="ry-page">
+  <section class="ry-panel">
+    @if (showSearch) {
+      <form nz-form nzLayout="inline" class="ry-search-form">
+        <nz-form-item>
+          <nz-form-label>操作地址</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qOperIp" placeholder="操作地址" [(ngModel)]="queryParams.operIp" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>系统模块</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qTitle" placeholder="系统模块" [(ngModel)]="queryParams.title" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>操作人员</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="qOperName" placeholder="操作人员" [(ngModel)]="queryParams.operName" (keyup.enter)="load()" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>类型</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qBiz" [(ngModel)]="businessTypeModel" nzPlaceHolder="业务类型" nzAllowClear class="w-160">
+              @for (d of businessTypes; track d.value) {
+                <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>状态</nz-form-label>
+          <nz-form-control>
+            <nz-select name="qStatus" [(ngModel)]="queryParams.status" nzPlaceHolder="状态" nzAllowClear class="w-160">
+              @for (d of statusDict; track d.value) {
+                <nz-option [nzValue]="d.value" [nzLabel]="d.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>操作时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker name="qDate" [(ngModel)]="dateRange" nzFormat="yyyy-MM-dd"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button nz-button nzType="primary" type="button" (click)="load()"><span nz-icon nzType="search"></span> 搜索</button>
+          <button nz-button type="button" class="ml-sm" (click)="resetQuery()"><span nz-icon nzType="reload"></span> 重置</button>
+        </nz-form-item>
+      </form>
+    }
+
+    <div class="ry-toolbar">
+      <button nz-button nzDanger nzType="default" type="button" [disabled]="multipleDisabled" (click)="batchDelete()">
+        <span nz-icon nzType="delete"></span> 删除
+      </button>
+      <button nz-button nzDanger nzType="default" type="button" (click)="cleanAll()"><span nz-icon nzType="delete"></span> 清空</button>
+      <button nz-button nzType="default" type="button" (click)="export()"><span nz-icon nzType="download"></span> 导出</button>
+      <div class="ry-toolbar-spacer"></div>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="显示/隐藏搜索" type="button" (click)="showSearch = !showSearch">
+        <span nz-icon nzType="search"></span>
+      </button>
+      <button nz-button nzType="text" nz-tooltip nzTooltipTitle="刷新" type="button" (click)="load()"><span nz-icon nzType="reload"></span></button>
+    </div>
+
+    <nz-table
+      #dataTable
+      nzSize="middle"
+      [nzData]="list"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageSize]="queryParams.pageSize!"
+      [nzPageIndex]="queryParams.pageNum!"
+      [nzFrontPagination]="false"
+      nzShowSizeChanger
+      [nzPageSizeOptions]="[10, 20, 50, 100]"
+      (nzQueryParams)="onTableQuery($event)"
+    >
+      <thead>
+        <tr>
+          <th [nzWidth]="'48px'">
+            <label nz-checkbox [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></label>
+          </th>
+          <th>日志编号</th>
+          <th>系统模块</th>
+          <th>操作类型</th>
+          <th>操作人员</th>
+          <th>操作地址</th>
+          <th>操作状态</th>
+          <th>操作日期</th>
+          <th [nzWidth]="'140px'">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of dataTable.data; track row.operId) {
+          <tr>
+            <td>
+              <label nz-checkbox [nzChecked]="checkedIds.has(row.operId!)" (nzCheckedChange)="onCheckOne(row.operId!, $event)"></label>
+            </td>
+            <td>{{ row.operId }}</td>
+            <td>{{ row.title }}</td>
+            <td>{{ businessTypeLabel(row.businessType) }}</td>
+            <td>{{ row.operName }}</td>
+            <td>{{ row.operIp }}</td>
+            <td>
+              <nz-tag [nzColor]="row.status === '0' ? 'success' : 'error'">{{ row.status === '0' ? '正常' : '异常' }}</nz-tag>
+            </td>
+            <td>{{ row.operTime }}</td>
+            <td>
+              <a (click)="openDetail(row)">详细</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a class="danger-link" (click)="removeOne(row)">删除</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </section>
+</div>
+
+<nz-modal [(nzVisible)]="detailOpen" nzTitle="操作日志详细" (nzOnCancel)="detailOpen = false" (nzOnOk)="detailOpen = false" nzWidth="720px">
+  <ng-container *nzModalContent>
+    @if (detailRow) {
+      <nz-descriptions nzBordered [nzColumn]="1" nzSize="small">
+        <nz-descriptions-item nzTitle="操作模块">{{ detailRow.title }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="请求地址">{{ detailRow.operUrl }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="请求方式">{{ detailRow.requestMethod }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="方法">{{ detailRow.method }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="请求参数">
+          <pre class="ry-pre">{{ detailRow.operParam }}</pre>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="返回参数">
+          <pre class="ry-pre">{{ detailRow.jsonResult }}</pre>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="异常信息">{{ detailRow.errorMsg }}</nz-descriptions-item>
+      </nz-descriptions>
+    }
+  </ng-container>
+</nz-modal>
