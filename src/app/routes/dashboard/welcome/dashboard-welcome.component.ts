@@ -8,6 +8,15 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { forkJoin } from 'rxjs';
 
+import { WORLD_MAP_NAME_ZH, worldMapNameToZh } from './world-map-name-zh';
+
+/** 地图区域无数据时 ECharts 会给 NaN；避免 tooltip 显示 NaN */
+function formatMapTooltipValue(raw: unknown): string {
+  if (raw == null || raw === '') return '—';
+  const n = typeof raw === 'number' ? raw : Number(raw);
+  return Number.isFinite(n) ? String(n) : '—';
+}
+
 type KpiTone = 'blue' | 'green' | 'orange' | 'magenta';
 
 @Component({
@@ -153,7 +162,14 @@ export class DashboardWelcomeComponent implements OnInit {
 
   private buildChinaMapOption(): EChartsOption {
     return {
-      tooltip: { trigger: 'item', formatter: '{b}<br/>模拟访问量 {c}' },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params): string => {
+          const p = params as { name?: string; value?: unknown };
+          const v = formatMapTooltipValue(p.value);
+          return `${p.name ?? ''}<br/>模拟访问量 ${v}`;
+        },
+      },
       visualMap: {
         min: 0,
         max: 450,
@@ -191,7 +207,15 @@ export class DashboardWelcomeComponent implements OnInit {
 
   private buildWorldMapOption(): EChartsOption {
     return {
-      tooltip: { trigger: 'item', formatter: '{b}<br/>模拟指数 {c}' },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params): string => {
+          const p = params as { name?: string; value?: unknown };
+          const zh = worldMapNameToZh(p.name ?? '');
+          const v = formatMapTooltipValue(p.value);
+          return `${zh}<br/>模拟指数 ${v}`;
+        },
+      },
       visualMap: {
         min: 0,
         max: 520,
@@ -207,8 +231,15 @@ export class DashboardWelcomeComponent implements OnInit {
           type: 'map',
           map: 'world',
           roam: true,
-          emphasis: { label: { show: true }, itemStyle: { areaColor: '#ffc069' } },
-          label: { show: false },
+          nameMap: WORLD_MAP_NAME_ZH as Record<string, string>,
+          emphasis: {
+            label: { show: true, formatter: (p): string => worldMapNameToZh(p.name) },
+            itemStyle: { areaColor: '#ffc069' },
+          },
+          label: {
+            show: false,
+            formatter: (p): string => worldMapNameToZh(p.name),
+          },
           data: [
             { name: 'China', value: 500 },
             { name: 'United States', value: 420 },
